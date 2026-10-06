@@ -1,7 +1,8 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const oracledb = require("oracledb");
-require("dotenv").config();
 
 const { conectarOracle } = require("./db");
 
@@ -14,15 +15,24 @@ app.use(express.json());
 
 
 /* =========================================
+   INICIO
+========================================= */
+
+app.get("/", function (req, res) {
+    res.json({
+        mensaje: "Backend Cerros de Valparaíso funcionando"
+    });
+});
+
+
+/* =========================================
    SALUD
 ========================================= */
 
 app.get("/api/salud", function (req, res) {
-
     res.json({
         mensaje: "API Cerros de Valparaíso funcionando"
     });
-
 });
 
 
@@ -31,11 +41,9 @@ app.get("/api/salud", function (req, res) {
 ========================================= */
 
 app.get("/api/oracle", async function (req, res) {
-
     let conexion;
 
     try {
-
         conexion = await conectarOracle();
 
         const resultado = await conexion.execute(
@@ -52,23 +60,19 @@ app.get("/api/oracle", async function (req, res) {
 
         res.json(resultado.rows[0]);
 
-    }
-    catch (error) {
+    } catch (error) {
 
         res.status(500).json({
             error: "No se pudo conectar con Oracle",
             detalle: error.message
         });
 
-    }
-    finally {
+    } finally {
 
         if (conexion) {
             await conexion.close();
         }
-
     }
-
 });
 
 
@@ -77,11 +81,9 @@ app.get("/api/oracle", async function (req, res) {
 ========================================= */
 
 app.get("/api/operadores", async function (req, res) {
-
     let conexion;
 
     try {
-
         conexion = await conectarOracle();
 
         const resultado = await conexion.execute(
@@ -102,23 +104,19 @@ app.get("/api/operadores", async function (req, res) {
 
         res.json(resultado.rows);
 
-    }
-    catch (error) {
+    } catch (error) {
 
         res.status(500).json({
             error: "No se pudieron obtener los operadores",
             detalle: error.message
         });
 
-    }
-    finally {
+    } finally {
 
         if (conexion) {
             await conexion.close();
         }
-
     }
-
 });
 
 
@@ -127,11 +125,9 @@ app.get("/api/operadores", async function (req, res) {
 ========================================= */
 
 app.get("/api/servicios", async function (req, res) {
-
     let conexion;
 
     try {
-
         conexion = await conectarOracle();
 
         const resultado = await conexion.execute(
@@ -153,23 +149,19 @@ app.get("/api/servicios", async function (req, res) {
 
         res.json(resultado.rows);
 
-    }
-    catch (error) {
+    } catch (error) {
 
         res.status(500).json({
             error: "No se pudieron obtener los servicios",
             detalle: error.message
         });
 
-    }
-    finally {
+    } finally {
 
         if (conexion) {
             await conexion.close();
         }
-
     }
-
 });
 
 
@@ -178,11 +170,9 @@ app.get("/api/servicios", async function (req, res) {
 ========================================= */
 
 app.get("/api/reservas", async function (req, res) {
-
     let conexion;
 
     try {
-
         conexion = await conectarOracle();
 
         const resultado = await conexion.execute(
@@ -203,36 +193,30 @@ app.get("/api/reservas", async function (req, res) {
 
         res.json(resultado.rows);
 
-    }
-    catch (error) {
+    } catch (error) {
 
         res.status(500).json({
             error: "No se pudieron obtener las reservas",
             detalle: error.message
         });
 
-    }
-    finally {
+    } finally {
 
         if (conexion) {
             await conexion.close();
         }
-
     }
-
 });
 
 
 /* =========================================
-   DETALLES DE RESERVA
+   DETALLES
 ========================================= */
 
 app.get("/api/detalles", async function (req, res) {
-
     let conexion;
 
     try {
-
         conexion = await conectarOracle();
 
         const resultado = await conexion.execute(
@@ -260,23 +244,19 @@ app.get("/api/detalles", async function (req, res) {
 
         res.json(resultado.rows);
 
-    }
-    catch (error) {
+    } catch (error) {
 
         res.status(500).json({
             error: "No se pudieron obtener los detalles",
             detalle: error.message
         });
 
-    }
-    finally {
+    } finally {
 
         if (conexion) {
             await conexion.close();
         }
-
     }
-
 });
 
 
@@ -291,52 +271,44 @@ app.get(
         let conexion;
 
         try {
-
             conexion = await conectarOracle();
 
-            const resultado =
-                await conexion.execute(
-                    `
-                    SELECT
-                        id_operador AS "id_operador",
-                        nombre_fantasia AS "nombre_fantasia",
-                        cerro AS "cerro",
-                        pct_comision AS "pct_comision",
-                        total_servicios AS "total_servicios",
-                        total_ventas AS "total_ventas",
-                        monto_comision AS "monto_comision",
-                        monto_a_pagar AS "monto_a_pagar"
-                    FROM vw_resumen_operadores
-                    ORDER BY id_operador
-                    `,
-                    [],
-                    {
-                        outFormat:
-                            oracledb.OUT_FORMAT_OBJECT
-                    }
-                );
+            const resultado = await conexion.execute(
+                `
+                SELECT
+                    id_operador AS "id_operador",
+                    nombre_fantasia AS "nombre_fantasia",
+                    cerro AS "cerro",
+                    pct_comision AS "pct_comision",
+                    total_servicios AS "total_servicios",
+                    total_ventas AS "total_ventas",
+                    monto_comision AS "monto_comision",
+                    monto_a_pagar AS "monto_a_pagar"
+                FROM vw_resumen_operadores
+                ORDER BY id_operador
+                `,
+                [],
+                {
+                    outFormat: oracledb.OUT_FORMAT_OBJECT
+                }
+            );
 
             res.json(resultado.rows);
 
-        }
-        catch (error) {
+        } catch (error) {
 
             res.status(500).json({
                 error:
                     "No se pudo obtener el resumen de operadores",
-                detalle:
-                    error.message
+                detalle: error.message
             });
 
-        }
-        finally {
+        } finally {
 
             if (conexion) {
                 await conexion.close();
             }
-
         }
-
     }
 );
 
@@ -346,11 +318,9 @@ app.get(
 ========================================= */
 
 app.get("/api/total-ventas", async function (req, res) {
-
     let conexion;
 
     try {
-
         conexion = await conectarOracle();
 
         const resultado = await conexion.execute(
@@ -367,23 +337,19 @@ app.get("/api/total-ventas", async function (req, res) {
 
         res.json(resultado.rows[0]);
 
-    }
-    catch (error) {
+    } catch (error) {
 
         res.status(500).json({
             error: "No se pudo obtener el total de ventas",
             detalle: error.message
         });
 
-    }
-    finally {
+    } finally {
 
         if (conexion) {
             await conexion.close();
         }
-
     }
-
 });
 
 
@@ -392,11 +358,9 @@ app.get("/api/total-ventas", async function (req, res) {
 ========================================= */
 
 app.get("/api/liquidaciones", async function (req, res) {
-
     let conexion;
 
     try {
-
         conexion = await conectarOracle();
 
         const resultado = await conexion.execute(
@@ -419,23 +383,19 @@ app.get("/api/liquidaciones", async function (req, res) {
 
         res.json(resultado.rows);
 
-    }
-    catch (error) {
+    } catch (error) {
 
         res.status(500).json({
             error: "No se pudieron obtener las liquidaciones",
             detalle: error.message
         });
 
-    }
-    finally {
+    } finally {
 
         if (conexion) {
             await conexion.close();
         }
-
     }
-
 });
 
 
@@ -444,11 +404,9 @@ app.get("/api/liquidaciones", async function (req, res) {
 ========================================= */
 
 app.get("/api/auditoria", async function (req, res) {
-
     let conexion;
 
     try {
-
         conexion = await conectarOracle();
 
         const resultado = await conexion.execute(
@@ -469,23 +427,19 @@ app.get("/api/auditoria", async function (req, res) {
 
         res.json(resultado.rows);
 
-    }
-    catch (error) {
+    } catch (error) {
 
         res.status(500).json({
             error: "No se pudo obtener la auditoría",
             detalle: error.message
         });
 
-    }
-    finally {
+    } finally {
 
         if (conexion) {
             await conexion.close();
         }
-
     }
-
 });
 
 
@@ -494,7 +448,6 @@ app.get("/api/auditoria", async function (req, res) {
 ========================================= */
 
 app.post("/api/detalles", async function (req, res) {
-
     let conexion;
 
     const {
@@ -506,7 +459,6 @@ app.post("/api/detalles", async function (req, res) {
         fecha_servicio
     } = req.body;
 
-
     if (
         !id_detalle ||
         !id_reserva ||
@@ -515,16 +467,12 @@ app.post("/api/detalles", async function (req, res) {
         subtotal === undefined ||
         !fecha_servicio
     ) {
-
         return res.status(400).json({
             error: "Debe completar todos los campos"
         });
-
     }
 
-
     try {
-
         conexion = await conectarOracle();
 
         await conexion.execute(
@@ -559,36 +507,29 @@ app.post("/api/detalles", async function (req, res) {
             }
         );
 
-
         await conexion.commit();
-
 
         res.status(201).json({
             mensaje:
                 "Detalle de reserva registrado correctamente"
         });
 
-    }
-    catch (error) {
+    } catch (error) {
 
         if (conexion) {
             await conexion.rollback();
         }
 
-
         res.status(500).json({
             error: error.message
         });
 
-    }
-    finally {
+    } finally {
 
         if (conexion) {
             await conexion.close();
         }
-
     }
-
 });
 
 
@@ -613,7 +554,6 @@ app.put(
             fecha_servicio
         } = req.body;
 
-
         if (
             !idDetalle ||
             !id_reserva ||
@@ -622,20 +562,15 @@ app.put(
             subtotal === undefined ||
             !fecha_servicio
         ) {
-
             return res.status(400).json({
                 error:
                     "Debe completar todos los campos"
             });
-
         }
 
-
         try {
-
             conexion =
                 await conectarOracle();
-
 
             const resultado =
                 await conexion.execute(
@@ -677,50 +612,40 @@ app.put(
                     }
                 );
 
-
             if (
                 resultado.rowsAffected === 0
             ) {
-
                 await conexion.rollback();
 
                 return res.status(404).json({
                     error:
                         "El detalle indicado no existe"
                 });
-
             }
 
-
             await conexion.commit();
-
 
             res.json({
                 mensaje:
                     "Detalle de reserva actualizado correctamente"
             });
 
-        }
-        catch (error) {
+        } catch (error) {
 
             if (conexion) {
                 await conexion.rollback();
             }
 
-
             res.status(500).json({
                 error: error.message
             });
 
-        }
-        finally {
+        } finally {
 
             if (conexion) {
                 await conexion.close();
             }
-
         }
-
     }
 );
 
@@ -738,22 +663,16 @@ app.delete(
         const idDetalle =
             Number(req.params.id);
 
-
         if (!idDetalle) {
-
             return res.status(400).json({
                 error:
                     "ID de detalle no válido"
             });
-
         }
 
-
         try {
-
             conexion =
                 await conectarOracle();
-
 
             const resultado =
                 await conexion.execute(
@@ -767,36 +686,29 @@ app.delete(
                     }
                 );
 
-
             if (
                 resultado.rowsAffected === 0
             ) {
-
                 await conexion.rollback();
 
                 return res.status(404).json({
                     error:
                         "El detalle indicado no existe"
                 });
-
             }
 
-
             await conexion.commit();
-
 
             res.json({
                 mensaje:
                     "Detalle de reserva eliminado correctamente"
             });
 
-        }
-        catch (error) {
+        } catch (error) {
 
             if (conexion) {
                 await conexion.rollback();
             }
-
 
             res.status(500).json({
                 error:
@@ -806,15 +718,12 @@ app.delete(
                     error.message
             });
 
-        }
-        finally {
+        } finally {
 
             if (conexion) {
                 await conexion.close();
             }
-
         }
-
     }
 );
 
@@ -830,10 +739,8 @@ app.post(
         let conexion;
 
         try {
-
             conexion =
                 await conectarOracle();
-
 
             await conexion.execute(
                 `
@@ -843,19 +750,18 @@ app.post(
                 `
             );
 
+            await conexion.commit();
 
             res.json({
                 mensaje:
                     "Liquidaciones generadas correctamente"
             });
 
-        }
-        catch (error) {
+        } catch (error) {
 
             if (conexion) {
                 await conexion.rollback();
             }
-
 
             res.status(500).json({
                 error:
@@ -865,15 +771,12 @@ app.post(
                     error.message
             });
 
-        }
-        finally {
+        } finally {
 
             if (conexion) {
                 await conexion.close();
             }
-
         }
-
     }
 );
 
@@ -893,22 +796,16 @@ app.post(
                 req.params.idOperador
             );
 
-
         if (!idOperador) {
-
             return res.status(400).json({
                 error:
                     "Operador no válido"
             });
-
         }
 
-
         try {
-
             conexion =
                 await conectarOracle();
-
 
             await conexion.execute(
                 `
@@ -924,19 +821,18 @@ app.post(
                 }
             );
 
+            await conexion.commit();
 
             res.json({
                 mensaje:
                     `Liquidación del operador ${idOperador} generada correctamente`
             });
 
-        }
-        catch (error) {
+        } catch (error) {
 
             if (conexion) {
                 await conexion.rollback();
             }
-
 
             res.status(500).json({
                 error:
@@ -946,15 +842,12 @@ app.post(
                     error.message
             });
 
-        }
-        finally {
+        } finally {
 
             if (conexion) {
                 await conexion.close();
             }
-
         }
-
     }
 );
 
@@ -963,10 +856,12 @@ app.post(
    SERVIDOR
 ========================================= */
 
-app.listen(PORT, function () {
-
-    console.log(
-        `Servidor ejecutándose en http://localhost:${PORT}`
-    );
-
-});
+app.listen(
+    PORT,
+    "0.0.0.0",
+    function () {
+        console.log(
+            `Servidor ejecutándose en el puerto ${PORT}`
+        );
+    }
+);
